@@ -15,8 +15,9 @@ on:
       - ".github/workflows/dataManagementZoneDeployment.yml"
 
 env:
-  AZURE_SUBSCRIPTION_ID: "17588eb2-2943-461a-ab3f-00a3ceac3112" # Update to '{dataHubSubscriptionId}'
+  AZURE_SUBSCRIPTION_ID: "c16ab74f-8d73-44a8-b761-f7b7c5505c89" # Update to '{dataHubSubscriptionId}'
   AZURE_LOCATION: "northeurope"                                 # Update to '{regionName}'
+  AZURE_RESOURCE_MANAGER_CONNECTION_NAME: "sp_dmzdeployment"
 
 jobs:
   validation:
