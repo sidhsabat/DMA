@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyName": {
+            "value": "Audit-MariaDb-PrivateEndpointId"
+        },
+        "policyDescription": {
+            "value": "Audit private endpoints that are created in other subscriptions for maria db."
+        },
+        "policyMode": {
+            "value": "Indexed"
+        },
+        "policyParameters": {
+            "value": {
+                "effect": {
+                    "type": "String",
+                    "metadata": {
+                        "displayName": "Effect",
+                        "description": "Enable or disable the execution of the policy"
+                    },
+                    "allowedValues": [
+                        "Audit",
+                        "Disabled"
+                    ],
+                    "defaultValue": "Audit"
+                }
+            }
+        },
+        "policyDefinition": {
+            "value": {
+                "if": {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.DBforMariaDB/servers"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.DBforMariaDB/servers/privateEndpointConnections[*]",
+                                "where": {
+                                    "field": "Microsoft.DBforMariaDB/servers/privateEndpointConnections[*].privateEndpoint.id",
+                                    "notContains": "[subscription().id]"
+                                }
+                            },
+                            "greaterOrEquals": 1
+                        }
+                    ]
+                },
+                "then": {
+                    "effect": "[parameters('effect')]"
+                }
+            }
+        },
+        "policyMetadata": {
+            "value": {
+                "version": "1.0.0",
+                "category": "SQL",
+                "preview": false,
+                "deprecated": false
+            }
+        }
+    }
+}

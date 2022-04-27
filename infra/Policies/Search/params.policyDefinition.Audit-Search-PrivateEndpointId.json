@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyName": {
+            "value": "Audit-Search-PrivateEndpointId"
+        },
+        "policyDescription": {
+            "value": "Audit public endpoints that are created in other subscriptions for search."
+        },
+        "policyMode": {
+            "value": "Indexed"
+        },
+        "policyParameters": {
+            "value": {
+                "effect": {
+                    "type": "String",
+                    "metadata": {
+                        "displayName": "Effect",
+                        "description": "Enable or disable the execution of the policy"
+                    },
+                    "allowedValues": [
+                        "Audit",
+                        "Disabled"
+                    ],
+                    "defaultValue": "Audit"
+                }
+            }
+        },
+        "policyDefinition": {
+            "value": {
+                "if": {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.Search/searchServices"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Search/searchServices/privateEndpointConnections[*]",
+                                "where": {
+                                    "field": "Microsoft.Search/searchServices/privateEndpointConnections[*].privateEndpoint.id",
+                                    "notContains": "[subscription().id]"
+                                }
+                            },
+                            "greaterOrEquals": 1
+                        }
+                    ]
+                },
+                "then": {
+                    "effect": "[parameters('effect')]"
+                }
+            }
+        },
+        "policyMetadata": {
+            "value": {
+                "version": "1.0.0",
+                "category": "Search",
+                "preview": false,
+                "deprecated": false
+            }
+        }
+    }
+}
